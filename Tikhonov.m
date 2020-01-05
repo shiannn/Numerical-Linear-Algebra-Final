@@ -1,16 +1,24 @@
-function solve()
+function Tik()
     N = 40;
-    S = log_dis(N); %do logarithmically distributed to get sj
+    S = log_dis(N);
     Y = getY(S);
-    [T W] = legpts(N,[0,5],'GW'); %do quad to get wk, tk
-    A = getA(W,S,T);%use s t to get A
-    Xcal = A\Y;%Ax=y
-    Xtrue = getTrueX(T); %true f(t)
-    plot([1:N],Xcal);
-    hold on
-    plot([1:N],Xtrue);
-    xlabel("elements i'th");
-    ylabel("value of Xcal(i) and Xtrue(i)");
+    %add random noise
+    rad = 1e-4
+    noise = (-1)*rad + 2*rad*rand(N,1)
+    Ynoise = Y+noise;
+
+    [T W] = legpts(N,[0,5],'GW');
+    %use s t to get A
+    A = getA(W,S,T);
+    %use normal equation to get Xcal
+    %(A^TA+alpha*I)xa = A^Tb
+    delta = 1e-3;
+    I = eye(N);
+    Aplus = (A'*A+delta*delta*I);
+    B = A'*Ynoise;
+    %Aplus*X = B
+    Xcal = Aplus \ B;
+    Xtrue = getTrueX(T);
     norm(Xcal-Xtrue,2)
 end
 
@@ -56,5 +64,5 @@ function S = log_dis(N)
 end
 
 function Lf = getLf(s)
-    Lf = (2-3*exp((-1)*s)+exp((-3)*s))/(2*s*s);
+    Lf = (2-3*exp((-1)*s)+exp((-3)*s))/(2*(s^2));
 end
