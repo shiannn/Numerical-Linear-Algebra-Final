@@ -12,14 +12,26 @@ function Tik()
     A = getA(W,S,T);
     %use normal equation to get Xcal
     %(A^TA+alpha*I)xa = A^Tb
-    delta = 1e-3;
-    I = eye(N);
-    Aplus = (A'*A+delta*delta*I);
-    B = A'*Ynoise;
-    %Aplus*X = B
-    Xcal = Aplus \ B;
-    Xtrue = getTrueX(T);
-    norm(Xcal-Xtrue,2)
+    for pw = 2:5
+        figure(pw);
+        delta = 10^(-pw);
+        I = eye(N);
+        Aplus = (A'*A+delta*delta*I);
+        B = A'*Ynoise;
+        %Aplus*X = B
+        Xcal = Aplus \ B;
+        Xtrue = getTrueX(T);
+
+        plot([1:N],Xcal);
+        hold on
+        plot([1:N],Xtrue);
+        %title('\delta')
+        title(['\delta = ',num2str(delta)])
+        xlabel("elements i'th");
+        ylabel("value of Xcal(i) and Xtrue(i)");
+        legend('Xcal','Xtrue');
+        norm(Xcal-Xtrue,2)
+    end
 end
 
 function Xtrue = getTrueX(T)

@@ -8,44 +8,28 @@ function TSVD()
     %use s t to get A
     A = getA(W,S,T);
     [U,S,V] = svd(A);
-    %singuNum = 40;
-
-PLOTX = [];
-PLOTY = [];
-TOL = [];
-for pw = 1:30
-    Snew = S;
-    %tol = 1e-15
-    tol = 10^((-1)*pw);
-    TOL = [TOL, tol];
-    
-    %Utrun = U(:,1:singuNum);
-    for i=1:N 
-        if(S(i,i)<tol)
-            Snew(i,i) = 0;
-        else 
-            Snew(i,i) = 1./Snew(i,i);
+    PLOTX = [];
+    PLOTY = [];
+    for singuNum = 1:N
+        Snew = S;
+        for i=1:N 
+            if(i>singuNum)
+                Snew(i,i) = 0;
+            else 
+                Snew(i,i) = 1./Snew(i,i);
+            end
         end
-    end
-
-    Strun = zeros(N,N);
-    for i=1:N 
-        if(Snew(i,i)~=0)
-            Strun(i,i) = Snew(i,i);
+        Strun = zeros(N,N);
+        for i=1:N 
+            if(Snew(i,i)~=0)
+                Strun(i,i) = Snew(i,i);
+            end
         end
+        Xcal = V*Strun*U'*Y;
+        Xtrue = getTrueX(T);
+        PLOTX = [PLOTX, size(nonzeros(diag(Snew)),1)];
+        PLOTY = [PLOTY, norm(Xcal - Xtrue,2)];
     end
-    Strun
-    Xcal = V*Strun*U'*Y;
-    %Xcal = pinv(A)*Y
-    Xtrue = getTrueX(T);
-    
-    PLOTX = [PLOTX, size(nonzeros(diag(Snew)),1)];
-    
-    PLOTY = [PLOTY, norm(Xcal - Xtrue,2)];
-end
-    TOL
-    PLOTX
-    PLOTY
     plot(PLOTX,PLOTY);
     xlabel('Number of singular values')
     ylabel('2-norm error between Xtrue and Xcal')

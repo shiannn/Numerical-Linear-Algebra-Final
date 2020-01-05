@@ -11,6 +11,7 @@ function solve()
     plot([1:N],Xtrue);
     xlabel("elements i'th");
     ylabel("value of Xcal(i) and Xtrue(i)");
+    legend('Xcal','Xtrue')
     norm(Xcal-Xtrue,2)
 end
 
